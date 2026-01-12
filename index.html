@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>30-Day DevSecOps Challenge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+        }
+        
+        .progress-bar {
+            background: #e0e0e0;
+            border-radius: 10px;
+            height: 30px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .week {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .week-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .week-title {
+            font-size: 1.5em;
+            color: #333;
+        }
+        
+        .week-badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+        
+        .beginner { background: #e3f2fd; color: #1976d2; }
+        .intermediate { background: #fff3e0; color: #f57c00; }
+        .advanced { background: #fce4ec; color: #c2185b; }
+        
+        .day {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .day:hover {
+            background: #e8eaf6;
+            transform: translateX(5px);
+        }
+        
+        .day.completed {
+            border-left-color: #4caf50;
+            background: #f1f8f4;
+        }
+        
+        .day-number {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 35px;
+            margin-right: 15px;
+            font-weight: bold;
+        }
+        
+        .day.completed .day-number {
+            background: #4caf50;
+        }
+        
+        .day-title {
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1em;
+        }
+        
+        .day-description {
+            margin-left: 50px;
+            color: #666;
+            margin-top: 10px;
+        }
+        
+        .tools {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-left: 50px;
+            margin-top: 10px;
+        }
+        
+        .tool-tag {
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .tips {
+            background: #fff9c4;
+            border-left: 4px solid #fbc02d;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        
+        .tips h3 {
+            color: #f57f17;
+            margin-bottom: 10px;
+        }
+        
+        .reset-btn {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+        
+        .reset-btn:hover {
+            background: #d32f2f;
+        }
+        
+        .collapsed .day {
+            display: none;
+        }
+        
+        .toggle-icon {
+            font-size: 1.2em;
+            transition: transform 0.3s;
+        }
+        
+        .collapsed .toggle-icon {
+            transform: rotate(-90deg);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 30-Day DevSecOps Challenge</h1>
+            <p class="subtitle">From Beginner to Advanced: Build Real-World Security Skills</p>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar">0%</div>
+            </div>
+            
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="completedDays">0</div>
+                    <div class="stat-label">Days Completed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="currentStreak">0</div>
+                    <div class="stat-label">Current Streak</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="skillsGained">0</div>
+                    <div class="stat-label">Skills Gained</div>
+                </div>
+            </div>
+            
+            <button class="reset-btn" onclick="resetProgress()">Reset Progress</button>
+        </header>
+
+        <!-- Week 1: Foundation -->
+        <div class="week">
+            <div class="week-header" onclick="toggleWeek(this)">
+                <div>
+                    <span class="week-title">Week 1: Security-First Foundations</span>
+                    <span class="week-badge beginner">Beginner</span>
+                </div>
+                <span class="toggle-icon">▼</span>
+            </div>
+            
+            <div class="day" onclick="toggleDay(this)" data-skills="1">
+                <span class="day-number">1</span>
+                <span class="day-title">Secure Linux Hardening Lab</span>
+                <div class="day-description">Set up a VM and harden it using CIS benchmarks. Configure SSH key auth, disable root login, setup fail2ban, and implement basic firewall rules with UFW.</div>
+                <div class="tools">
+                    <span class="tool-tag">Linux</span>
+                    <span class="tool-tag">SSH</span>
+                    <span class="tool-tag">UFW</span>
+                </div>
+            </div>
+            
+            <div class="day" onclick="toggleDay(this)" data-skills="1">
+                <span class="day-number">2</span>
+                <span class="day-title">Network Security Scanning</span>
+                <div class="day-description">Use Nmap to scan your network. Identify open ports, running services, and potential vulnerabilities. Document findings and create a remediation plan.</div>
+                <div class="tools">
+                    <span class="tool-tag">Networking</span>
+                    <span class="tool-tag">Nmap</span>
+                </div>
+            </div>
+            
+            <div class="day" onclick="toggleDay(this)" data-skills="1">
+                <span class="day-number">3</span>
+                <span class="day-title">Docker Security Basics</span>
+                <div class="day-description">Build a Docker image following security best practices: non-root user, minimal base image, no secrets in layers. Scan with Trivy for vulnerabilities.</div>
+                <div class="tools">
+                    <span class="tool-tag">Docker</span>
+                    <span class="tool-tag">Trivy</span>
+                </div>
+            </div>
+            
+            <div class="day" onclick="toggleDay(this)" data-skills="1">
+                <span class="day-number">4</span>
+                <span class="day-title">Git Secrets Detection</span>
+                <div class="day-description">Set up git-secrets or TruffleHog. Scan a repository for exposed credentials, API keys, and passwords. Create pre-commit hooks to prevent future leaks.</div>
+                <div class="tools">
+                    <span class="tool-tag">Git</span>
+                    <span class="tool-tag">Security</span>
+                </div>
+            </div>
+            
+            <div class="day" onclick="toggleDay(this)" data-skills="2">
+                <span class="day-number">5</span>
+                <span class="day-title">AWS IAM Security Audit</span>
+                <div class="day-description">Review IAM policies in your AWS account. Identify overly permissive roles, unused access keys, and implement least-privilege principles. Set up MFA.</div>
+                <div class="tools">
+                    <span class="tool-tag">AWS</span>
+                    <span class="tool-tag">IAM</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Week 2: Integration -->
+        <div class="week">
+            <div class="week-header" onclick="toggleWeek(this)">
+                <div>
+                    <span class="week-title">Week 2: CI/CD Security Pipeline</span>
+                    <span class="week-badge intermediate">Intermediate</span>
+                </div>
+                <span class="toggle-icon">▼</span>
+            </div>
+            
+            <div class="day" onclick="toggleDay(this)" data-skills="2">
+                <span class="day-number">6</span>
+                <span class="day-title">Build a Secure CI/CD Pipeline</span>
+                <div class="day-description">Create a GitHub Actions pipeline that includes SAST scanning (with Semgrep or SonarQube), dependency checking, and automated security tests.</div>
+                <div class="tools">
+                    <span class="tool-tag">CI/CD</span>
+                    <span class="tool-tag">SAST</span>
+                    <span class="tool-tag">GitHub Actions</span>
+                </div>
+            </div>
+            
+            <div class="day" onclick="toggleDay(this)" data-skills="2">
+                <span class="day-number">7</span>
+                <span class="day-title">Container Registry Security</span>
+                <div class="day-description">Set up a private container registry with authentication. Implement image signing with Cosign and create policies to only allow signed images.</div>
+                <div class="tools">
+                    <span class="tool-tag">Docker</span>
+                    <span class="tool-tag">Cosign</span>
+                </div>
+            </div>
+            
+            <div class="day" onclick="toggleDay(this)" data-skills="2">
+                <span class="day-number">8</span>
+                <span class="day-title">Infrastructure as Code Security</span>
+                <div class="day-description">Write Terraform code to provision AWS resources. Use Checkov or tfsec to scan for misconfigurations before deployment.</div>
+                <div class="tools">
+                    <span class="tool-tag">Terraform</span>
+                    <span class="tool-tag">AWS</span>
+                    <span class="tool-tag">Checkov</span>
+                </div>
+            </div>
+            
+            <div class="day" onclick="toggleDay(this)" data-skills="2">
+                <span class="day-number">9</span>
+                <span class="day-title">Ansible Security Playbooks</span>
+                <div class="day-description">Create Ansible playbooks to automate security configurations: install security updates, configure logging, setup intrusion detection with AIDE.</div>
+                <div class="tools">
+                    <span class="tool-tag">Ansible</span>
+                    <span class="tool-tag">Automation</span>
+                </div>
+            </div>
+            
+            <div class="day" onclick="toggleDay(this)" data-skills="2">
+                <span class="day-number">10</span>
+                <span class="day-title">Secrets Management</span>
+                <div class="day-description">Deploy HashiCorp Vault. Store database credentials, API keys, and certificates. Integrate with your applications to retrieve secrets dynamically.</div>
+                <div class="tools">
+                    <span class="tool-tag">Vault</span>
+                    <span class="tool-tag">Secrets</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Week 3: Kubernetes Security -->
+        <div class="week">
+            <div class="week-header" onclick="toggleWeek(this)">
+                <div>
+                    <span class="week-title">Week 3: Kubernetes Security Mastery</span>
+                    <span class="week-badge intermediate">Intermediate</span>
+                </div>
+                <span class="toggle-icon">▼</span>
+            </div>
+            
+            <div class="day" onclick="toggleDay(this)" data-skills="2">
+                <span class="day-number">11</span>
+                <span class="day-title">K8s RBAC Implementation</span>
+                <div class="day-description">Set up Role-Based Access Control in your Kubernetes cluster. Create custom roles with minimal permissions for different teams and services.</div>
+                <div class="tools">
+                    <span class="tool-tag">Kubernetes</span>
+                    <span class="tool-tag">RBAC</span>
+                </div>
+            </div>
+            
+            <div class="day" onclick="toggleDay(this)" data-skills="2">
+                <span class="day-number">12</span>
+                <span class="day-title">Pod Security Standards</span>
+                <div class="day-description">Implement Pod Security Policies/Admission Controllers. Prevent privileged containers, enforce read-only root filesystems, and drop capabilities.</div>
+                <div class="tools">
+                    <span class="tool-tag">Kubernetes</span>
+                    <span class="tool-tag">Security</span>
+                </div>
+            </div>
+            
+            <div class="day" onclick="toggleDay(this)" data-skills="2">
+                <span class="day-number">13</span>
+                <span class="day-title">Network Policies Lab</span>
+                <div class="day-description">Create Kubernetes Network Policies to control traffic between pods. Implement zero-trust networking with Calico or Cilium.</div>
+                <div class="tools">
+                    <span class="tool-tag">Kubernetes</span>
+                    <span class="tool-tag">Networking</span>
+                </div>
+            </div>
+            
+            <div class="day" onclick="toggleDay(this)" data-skills="2">
+                <span class="day-number">14</span>
+                <span class="day-title">Runtime Security Monitoring</span>
+                <div class="day-description">Deploy Falco for runtime threat detection. Create custom rules to detect suspicious activities like shell executions in containers.</div>
+                <div class="tools">
+                    <span class="tool-tag">Kubernetes</span>
+                    <span class="tool-tag">Falco</span>
+                </div>
+            </div>
+            
+            <div class="day" onclick="toggleDay(this)" data-skills="2">
+                <span class="day-number">15</span>
+                <span class="day-title">K8s Security Audit</span>
+                <div class="day-description">Use kube-bench and kube-hunter to audit your cluster against CIS benchmarks. Document and fix identified vulnerabilities.</div>
+                <div class="tools">
+                    <span class="tool-tag">Kubernetes</span>
+                    <span class="tool-tag">Audit</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Week 4: Advanced -->
+        <div class="week">
+            <div class="week-header" onclick="toggleWeek(this)">
+                <div>
+                    <span class="week-title">Week 4: Advanced Security Operations</span>
+                    <span class="week-badge advanced">Advanced</span>
+                </div>
+                <span class="toggle-icon">▼</span>
+            </div>
+            
+            <div class="day" onclick="toggleDay(this)" data-skills="3">
+                <span class="day-number">16</span>
+                <span class="day-title">Security Incident Response</span>
+                <div class="day-description">Simulate a security breach. Practice log analysis, containment, evidence collection, and recovery. Create an incident response playbook.</div>
+                <div class="tools">
+                    <span class="tool-tag">IR</span>
+                    <span class="tool-tag">Forensics</span>
+                </div>
+            </div>
+            
+            <div class="day" onclick="toggleDay(this)" data-skills="3">
+                <span class="day-number">17</span>
+                <span class="day-title">SIEM Integration</span>
+                <div class="day-description">Set up ELK Stack or Splunk. Collect logs from applications, containers, and infrastructure. Create alerts for security events.</div>
+                <div class="tools">
+                    <span class="tool-tag">SIEM</span>
+                    <span class="tool-tag">ELK</span>
+                </div>
+            </div>
+            
+            <div class="day" onclick="toggleDay(this)" data-skills="3">
+                <span class="day-number">18</span>
+                <span class="day-title">Vulnerability Management Pipeline</span>
+                <div class="day-description">Build an automated vuln management system. Integrate vulnerability scanners into CI/CD, create tickets for findings, track remediation.</div>
+                <div class="tools">
+                    <span class="tool-tag">Security</span>
+                    <span class="tool-tag">Automation</span>
+                </div>
+            </div>
+            
+            <div class="day" onclick="toggleDay(this)" data-skills="3">
+                <span class="day-number">19</span>
+                <span class="day-title">Compliance as Code</span>
+                <div class="day-description">Implement compliance checks (PCI-DSS, HIPAA, or SOC2) using InSpec or Open Policy Agent. Automate compliance reporting.</div>
+                <div class="tools">
+                    <span class="tool-tag">Compliance</span>
+                    <span class="tool-tag">OPA</span>
+                </div>
+            </div>
+            
+            <div class="day" onclick="toggleDay(this)" data-skills="3">
+                <span class="day-number">20</span>
+                <span class="day-title">Zero Trust Architecture</span>
+                <div class="day-description">Design and implement a zero trust network. Use service mesh (Istio/Linkerd) for mTLS, implement identity-based access controls.</div>
+                <div class="tools">
+                    <span class="tool-tag">Zero Trust</span>
+                    <span class="tool-tag">Service Mesh</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bonus Week -->
+        <div class="week">
+            <div class="week-header" onclick="toggleWeek(this)">
+                <div>
+                    <span class="week-title">Bonus: Real-World Project Week</span>
+                    <span class="week-badge advanced">Advanced</span>
+                </div>
+                <span class="toggle-icon">▼</span>
+            </div>
+            
+            <div class="day" onclick="toggleDay(this)" data-skills="3">
+                <span class="day-number">21</span>
+                <span class="day-title">Threat Modeling Exercise</span>
+                <div class="day-description">Use STRIDE or PASTA methodology to threat model a sample application. Identify attack vectors, create data flow diagrams, prioritize risks.</div>
+                <div class="tools">
+                    <span class="tool-tag">Threat Modeling</span>
+                    <span class="tool-tag">STRIDE</span>
+                </div>
+            </div>
+            
+            <div class="day" onclick="toggleDay(this)" data-skills="3">
+                <span class="day-number">22</span>
+                <span class="day-title">Penetration Testing Practice</span>
+                <div class="day-description">Use OWASP Juice Shop or similar vulnerable app. Practice common attacks: SQL injection, XSS, authentication bypass. Document findings.</div>
+                <div class="tools">
+                    <span class="tool-tag">PenTest</span>
+                    <span class="tool-tag">OWASP</span>
+                </div>
+            </div>
+            
+            <div class="day" onclick="toggleDay(this)" data-skills="3">
+                <span class="day-number">23</span>
+                <span class="day-title">Cloud Security Posture</span>
+                <div class="day-description">Use AWS Security Hub or Scout Suite to assess cloud security posture. Implement automated remediation for common misconfigurations.</div>
+                <div class="tools">
+                    <span class="tool-tag">AWS</span>
+                    <span class="tool-tag">CSPM</span>
+                </div>
+            </div>
+            
+            <div class="day" onclick="toggleDay(this)" data-skills="3">
+                <span class="day-number">24</span>
+                <span class="day-title">Security Chaos Engineering</span>
+                <div class="day-description">Introduce controlled failures to test security controls. Simulate compromised credentials, DDoS attacks, verify detection and response.</div>
+                <div class="tools">
+                    <span class="tool-tag">Chaos</span>
+                    <span class="tool-tag">Testing</span>
+                </div>
+            </div>
+            
+            <div class="day" onclick="toggleDay(this)" data-skills="3">
+                <span class="day-number">25</span>
+                <span class="day-title">Security Metrics Dashboard</span>
+                <div class="day-description">Build a Grafana dashboard showing security metrics: vulnerability trends, patch compliance, incident response times, MTTR.</div>
+                <div class="tools">
+                    <span class="tool-tag">Metrics</span>
+                    <span class="tool-tag">Grafana</span>
+                </div>
+            </div>
+            
+            <div class="day" onclick="toggleDay(this)" data-skills="4">
+                <span class="day-number">26-30</span>
+                <span class="day-title">Capstone: Build a Secure Application</span>
+                <div class="day-description">Deploy a complete secure application pipeline: containerized app, K8s deployment, security scanning in CI/CD, monitoring, logging, automated compliance checks, and incident response procedures. Document everything in a portfolio-ready format.</div>
+                <div class="tools">
+                    <span class="tool-tag">Full Stack</span>
+                    <span class="tool-tag">Portfolio Project</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="tips">
+            <h3>💡 Pro Tips for Success</h3>
+            <ul style="margin-left: 20px; margin-top: 10px; line-height: 1.8;">
+                <li><strong>Document everything:</strong> Create a GitHub repo with all your labs and learnings</li>
+                <li><strong>Join communities:</strong> Share progress on r/devops, r/netsec, or LinkedIn</li>
+                <li><strong>Build in public:</strong> Blog about what you learn each week</li>
+                <li><strong>Don't skip days:</strong> Even 30 minutes counts - consistency beats intensity</li>
+                <li><strong>Break when stuck:</strong> Use the Pomodoro technique and ask for help in communities</li>
+                <li><strong>Go deeper:</strong> Each challenge can be expanded into a multi-day project</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Load progress from localStorage
+        let completedDays = new Set(JSON.parse(localStorage.getItem('completedDays') || '[]'));
+        let lastCompletedDate = localStorage.getItem('lastCompletedDate');
+        
+        function updateStats() {
+            const total = document.querySelectorAll('.day').length;
+            const completed = completedDays.size;
+            const progress = Math.round((completed / total) * 100);
+            
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('progressBar').textContent = progress + '%';
+            document.getElementById('completedDays').textContent = completed;
+            
+            // Calculate streak
+            const today = new Date().toDateString();
+            const yesterday = new Date(Date.now() - 86400000).toDateString();
+            let streak = 0;
+            
+            if (lastCompletedDate === today) {
+                streak = parseInt(localStorage.getItem('currentStreak') || '1');
+            } else if (lastCompletedDate === yesterday) {
+                streak = parseInt(localStorage.getItem('currentStreak') || '0');
+            }
+            
+            document.getElementById('currentStreak').textContent = streak;
+            
+            // Calculate skills (simplified - based on data-skills attribute)
+            let skillPoints = 0;
+            completedDays.forEach(dayNum => {
+                const day = document.querySelector(`[data-day="${dayNum}"]`);
+                if (day) {
+                    skillPoints += parseInt(day.getAttribute('data-skills') || '1');
+                }
+            });
+            document.getElementById('skillsGained').textContent = skillPoints;
+        }
+        
+        function toggleDay(element) {
+            const dayNumber = element.querySelector('.day-number').textContent;
+            element.setAttribute('data-day', dayNumber);
+            
+            if (completedDays.has(dayNumber)) {
+                completedDays.delete(dayNumber);
+                element.classList.remove('completed');
+            } else {
+                completedDays.add(dayNumber);
+                element.classList.add('completed');
+                
+                // Update streak
+                const today = new Date().toDateString();
+                const yesterday = new Date(Date.now() - 86400000).toDateString();
+                let currentStreak = parseInt(localStorage.getItem('currentStreak') || '0');
+                
+                if (lastCompletedDate === today) {
+                    // Same day, no change
+                } else if (lastCompletedDate === yesterday) {
+                    currentStreak += 1;
+                } else {
+                    currentStreak = 1;
+                }
+                
+                localStorage.setItem('currentStreak', currentStreak.toString());
+                lastCompletedDate = today;
+                localStorage.setItem('lastCompletedDate', lastCompletedDate);
+            }
+            
+            localStorage.setItem('completedDays', JSON.stringify([...completedDays]));
+            updateStats();
+        }
+        
+        function toggleWeek(header) {
+            const week = header.parentElement;
+            week.classList.toggle('collapsed');
+        }
+        
+        function resetProgress() {
+            if (confirm('Are you sure you want to reset all progress? This cannot be undone.')) {
+                localStorage.removeItem('completedDays');
+                localStorage.removeItem('currentStreak');
+                localStorage.removeItem('lastCompletedDate');
+                completedDays.clear();
+                lastCompletedDate = null;
+                document.querySelectorAll('.day').forEach(day => {
+                    day.classList.remove('completed');
+                });
+                updateStats();
+            }
+        }
+        
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.day').forEach(day => {
+                const dayNumber = day.querySelector('.day-number').textContent;
+                day.setAttribute('data-day', dayNumber);
+                if (completedDays.has(dayNumber)) {
+                    day.classList.add('completed');
+                }
+            });
+            updateStats();
+        });
+    </script>
+</body>
+</html>
